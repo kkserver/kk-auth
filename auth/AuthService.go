@@ -1,8 +1,12 @@
 package auth
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"github.com/kkserver/kk-lib/kk"
 	"github.com/kkserver/kk-lib/kk/app"
+	"math/rand"
 	"time"
 )
 
@@ -19,6 +23,7 @@ type AuthService struct {
 	Init   *app.InitTask
 	Auth   *AuthTask
 	Set    *AuthSetTask
+	Create *AuthCreateTask
 	Remove *AuthRemoveTask
 
 	Expires int64
@@ -112,15 +117,63 @@ func (S *AuthService) HandleAuthSetTask(a *AuthApp, task *AuthSetTask) error {
 			if task.Openid != "" {
 				v.Openid = task.Openid
 			}
+
+			if task.Expires != 0 {
+				v.Expires = int64(time.Second) * task.Expires
+			}
+
 			v.Atime = time.Now().Unix()
+
 		} else {
+
 			v = &AuthObject{task.Uid, task.Phone, task.Openid, int64(time.Second) * S.Expires, time.Now().Unix()}
+
+			if task.Expires != 0 {
+				v.Expires = int64(time.Second) * task.Expires
+			}
+
 			S.objects[task.Code] = v
 		}
 
 		task.Result.Uid = v.Uid
 		task.Result.Phone = v.Phone
 		task.Result.Openid = v.Openid
+
+	})
+
+	return nil
+}
+
+func NewCode() string {
+	m := md5.New()
+	m.Write([]byte(fmt.Sprintf("%d %d", time.Now().UnixNano(), rand.Intn(100000))))
+	return hex.EncodeToString(m.Sum(nil))
+}
+
+func (S *AuthService) HandleAuthCreateTask(a *AuthApp, task *AuthCreateTask) error {
+
+	S.dispatch.Sync(func() {
+
+		var code string = ""
+
+		for {
+
+			code = NewCode()
+
+			v, ok := S.objects[task.Code]
+
+			if !ok {
+				v = &AuthObject{task.Uid, task.Phone, task.Openid, int64(time.Second) * S.Expires, time.Now().Unix()}
+				if task.Expires != 0 {
+					v.Expires = int64(time.Second) * task.Expires
+				}
+				S.objects[code] = v
+				break
+			}
+
+		}
+
+		task.Result.Code = code
 
 	})
 

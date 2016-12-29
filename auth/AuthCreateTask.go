@@ -4,23 +4,20 @@ import (
 	"github.com/kkserver/kk-lib/kk/app"
 )
 
-type AuthSetResult struct {
+type AuthCreateResult struct {
 	app.Result
-	Uid    int64  `json:"uid,string,omitempty"`
-	Phone  string `json:"phone,omitempty"`
-	Openid string `json:"openid,omitempty"`
+	Code string `json:"code,omitempty"`
 }
 
-type AuthSetTask struct {
+type AuthCreateTask struct {
 	app.Task
-	Code    string `json:"code"`
 	Uid     int64  `json:"uid,string,omitempty"`
 	Phone   string `json:"phone,omitempty"`
 	Openid  string `json:"openid,omitempty"`
 	Expires int64  `json:"expires,omitempty"`
-	Result  AuthSetResult
+	Result  AuthCreateResult
 }
 
-func (T *AuthSetTask) GetResult() interface{} {
+func (T *AuthCreateTask) GetResult() interface{} {
 	return &T.Result
 }
