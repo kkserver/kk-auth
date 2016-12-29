@@ -11,11 +11,12 @@ type AuthCreateResult struct {
 
 type AuthCreateTask struct {
 	app.Task
-	Uid     int64  `json:"uid,string,omitempty"`
-	Phone   string `json:"phone,omitempty"`
-	Openid  string `json:"openid,omitempty"`
-	Expires int64  `json:"expires,omitempty"`
-	Result  AuthCreateResult
+	Uid      int64  `json:"uid,string,omitempty"`
+	Phone    string `json:"phone,omitempty"`
+	Openid   string `json:"openid,omitempty"`
+	DeviceId string `json:"deviceid,omitempty"`
+	Expires  int64  `json:"expires,omitempty"`
+	Result   AuthCreateResult
 }
 
 func (T *AuthCreateTask) GetResult() interface{} {

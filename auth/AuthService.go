@@ -11,11 +11,12 @@ import (
 )
 
 type AuthObject struct {
-	Uid     int64
-	Phone   string
-	Openid  string
-	Expires int64
-	Atime   int64
+	Uid      int64
+	Phone    string
+	Openid   string
+	DeviceId string
+	Expires  int64
+	Atime    int64
 }
 
 type AuthService struct {
@@ -85,6 +86,7 @@ func (S *AuthService) HandleAuthTask(a *AuthApp, task *AuthTask) error {
 			task.Result.Uid = v.Uid
 			task.Result.Phone = v.Phone
 			task.Result.Openid = v.Openid
+			task.Result.DeviceId = v.DeviceId
 		} else {
 			task.Result.Errno = ERROR_AUTH_NOPERMISSION
 			task.Result.Errmsg = "No Premission"
@@ -117,6 +119,9 @@ func (S *AuthService) HandleAuthSetTask(a *AuthApp, task *AuthSetTask) error {
 			if task.Openid != "" {
 				v.Openid = task.Openid
 			}
+			if task.DeviceId != "" {
+				v.DeviceId = task.DeviceId
+			}
 
 			if task.Expires != 0 {
 				v.Expires = int64(time.Second) * task.Expires
@@ -126,7 +131,7 @@ func (S *AuthService) HandleAuthSetTask(a *AuthApp, task *AuthSetTask) error {
 
 		} else {
 
-			v = &AuthObject{task.Uid, task.Phone, task.Openid, int64(time.Second) * S.Expires, time.Now().Unix()}
+			v = &AuthObject{task.Uid, task.Phone, task.Openid, task.DeviceId, int64(time.Second) * S.Expires, time.Now().Unix()}
 
 			if task.Expires != 0 {
 				v.Expires = int64(time.Second) * task.Expires
@@ -138,6 +143,7 @@ func (S *AuthService) HandleAuthSetTask(a *AuthApp, task *AuthSetTask) error {
 		task.Result.Uid = v.Uid
 		task.Result.Phone = v.Phone
 		task.Result.Openid = v.Openid
+		task.Result.DeviceId = v.DeviceId
 
 	})
 
@@ -163,7 +169,7 @@ func (S *AuthService) HandleAuthCreateTask(a *AuthApp, task *AuthCreateTask) err
 			v, ok := S.objects[code]
 
 			if !ok {
-				v = &AuthObject{task.Uid, task.Phone, task.Openid, int64(time.Second) * S.Expires, time.Now().Unix()}
+				v = &AuthObject{task.Uid, task.Phone, task.Openid, task.DeviceId, int64(time.Second) * S.Expires, time.Now().Unix()}
 				if task.Expires != 0 {
 					v.Expires = int64(time.Second) * task.Expires
 				}
