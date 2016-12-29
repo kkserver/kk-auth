@@ -160,7 +160,7 @@ func (S *AuthService) HandleAuthCreateTask(a *AuthApp, task *AuthCreateTask) err
 
 			code = NewCode()
 
-			v, ok := S.objects[task.Code]
+			v, ok := S.objects[code]
 
 			if !ok {
 				v = &AuthObject{task.Uid, task.Phone, task.Openid, int64(time.Second) * S.Expires, time.Now().Unix()}
