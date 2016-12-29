@@ -26,6 +26,7 @@ type AuthService struct {
 	Set    *AuthSetTask
 	Create *AuthCreateTask
 	Remove *AuthRemoveTask
+	Clear  *AuthClearTask
 
 	Expires int64
 
@@ -196,6 +197,31 @@ func (S *AuthService) HandleAuthRemoveTask(a *AuthApp, task *AuthRemoveTask) err
 
 	S.dispatch.Sync(func() {
 		delete(S.objects, task.Code)
+	})
+
+	return nil
+}
+
+func (S *AuthService) HandleAuthClearTask(a *AuthApp, task *AuthClearTask) error {
+
+	S.dispatch.Sync(func() {
+
+		var keys []string = []string{}
+
+		for key, value := range S.objects {
+
+			if (task.Uid == 0 || task.Uid == value.Uid) &&
+				(task.Phone == "" || task.Phone == value.Phone) &&
+				(task.Openid == "" || task.Openid == value.Openid) &&
+				(task.DeviceId == "" || task.DeviceId == value.DeviceId) {
+				keys = append(keys, key)
+			}
+		}
+
+		for _, key := range keys {
+			delete(S.objects, key)
+		}
+
 	})
 
 	return nil
