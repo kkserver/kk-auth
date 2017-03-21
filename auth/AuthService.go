@@ -64,7 +64,11 @@ func (S *AuthService) HandleAuthTask(a IAuthApp, task *AuthTask) error {
 		}
 
 		if v.Atime+v.Expires >= time.Now().Unix() {
+
 			task.Result.Auth = &v
+
+			_, _ = kk.DBUpdateWithKeys(db, a.GetAuthTable(), a.GetPrefix(), &v, map[string]bool{"atime": true})
+
 		} else {
 			task.Result.Errno = ERROR_AUTH_NOPERMISSION
 			task.Result.Errmsg = "no permission"
@@ -181,6 +185,7 @@ func (S *AuthService) HandleAuthCreateTask(a IAuthApp, task *AuthCreateTask) err
 	v.Phone = task.Phone
 	v.DeviceId = task.DeviceId
 	v.Openid = task.Openid
+	v.Expires = task.Expires
 	v.Atime = time.Now().Unix()
 	v.Ctime = v.Atime
 
