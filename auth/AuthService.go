@@ -13,7 +13,7 @@ import (
 type AuthService struct {
 	app.Service
 
-	Auth   *AuthTask
+	Get    *AuthTask
 	Set    *AuthSetTask
 	Create *AuthCreateTask
 	Remove *AuthRemoveTask
