@@ -6,10 +6,7 @@ import (
 
 type AuthResult struct {
 	app.Result
-	Uid      int64  `json:"uid,string,omitempty"`
-	Phone    string `json:"phone,omitempty"`
-	Openid   string `json:"openid,omitempty"`
-	DeviceId string `json:"deviceid,omitempty"`
+	Auth *Auth `json:"auth,omitempty"`
 }
 
 type AuthTask struct {

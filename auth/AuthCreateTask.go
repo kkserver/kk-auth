@@ -6,7 +6,7 @@ import (
 
 type AuthCreateResult struct {
 	app.Result
-	Code string `json:"code,omitempty"`
+	Auth *Auth `json:"auth,omitempty"`
 }
 
 type AuthCreateTask struct {
