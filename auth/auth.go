@@ -27,7 +27,6 @@ type IAuthApp interface {
 	GetDB() (*sql.DB, error)
 	GetPrefix() string
 	GetAuthTable() *kk.DBTable
-	GetCacheExpires() int64
 }
 
 type AuthApp struct {
